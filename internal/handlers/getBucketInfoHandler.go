@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	dto "github.com/Piccadilly98/linksChecker/internal/DTO"
-	document_worker "github.com/Piccadilly98/linksChecker/internal/documentWorker.go"
+	document_worker "github.com/Piccadilly98/linksChecker/internal/documentWorker"
 	"github.com/Piccadilly98/linksChecker/internal/storage"
 )
 
