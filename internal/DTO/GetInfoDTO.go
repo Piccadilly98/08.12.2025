@@ -1,25 +1,29 @@
 package dto
 
-import "slices"
-
 type InfoWithNumbersBucketDTO struct {
 	LinksList []int64 `json:"links_list"`
 	LinkList  *int64  `json:"link_list"`
+	// Valid     bool    `json:"-"`
 }
 
 func (n *InfoWithNumbersBucketDTO) Validate() bool {
-	if n.LinkList != nil {
-		if slices.Contains(n.LinksList, *n.LinkList) {
-			return false
+	if len(n.LinksList) > 0 {
+		for _, l := range n.LinksList {
+			if l < 0 {
+				return false
+			}
 		}
+		return true
+	}
+	if n.LinkList != nil && *n.LinkList >= 0 {
+		return true
+	}
+	return false
+}
+
+func (n *InfoWithNumbersBucketDTO) ProcessingDTO() {
+	if n.LinkList != nil {
 		n.LinksList = append(n.LinksList, *n.LinkList)
 		n.LinkList = nil
 	}
-
-	for _, v := range n.LinksList {
-		if v < 0 {
-			return false
-		}
-	}
-	return true
 }

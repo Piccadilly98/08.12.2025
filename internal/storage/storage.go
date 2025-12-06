@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	StatusAvalible    = "avalible"
-	StatusNotAvalible = "not avalible"
+	StatusAvalible    = "available"
+	StatusNotAvalible = "not available"
 )
 
 type Storage struct {
@@ -35,7 +35,6 @@ func (s *Storage) RegistrationLinks(links map[string]string) int64 {
 	return s.counter.Load()
 }
 
-// error check in handler
 func (s *Storage) GetLiinksInfo(id int64) map[string]string {
 	s.mu.RLock()
 	defer s.mu.RUnlock()

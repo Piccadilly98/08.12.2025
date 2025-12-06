@@ -11,41 +11,27 @@ import (
 	"github.com/Piccadilly98/linksChecker/internal/storage"
 )
 
-type getBucketInfoHandler struct {
+type GetBucketInfoHandler struct {
 	st *storage.Storage
 }
 
-func MakeGetBucketInfoHandler(st *storage.Storage) *getBucketInfoHandler {
-	return &getBucketInfoHandler{st: st}
+func MakeGetBucketInfoHandler(st *storage.Storage) *GetBucketInfoHandler {
+	return &GetBucketInfoHandler{
+		st: st,
+	}
 }
 
-func (g *getBucketInfoHandler) Hadler(w http.ResponseWriter, r *http.Request) {
+func (g *GetBucketInfoHandler) Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	numbers := g.readBodyAndGetNumbers(r)
 	if numbers == nil {
 		errFmt := fmt.Errorf("invalid body")
-		b := dto.MakeResponseDTO(errFmt, nil)
-		resp, err := json.Marshal(b)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			log.Println(err)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(resp)
+		ProcessingError(w, r, errFmt, nil)
 		return
 	}
 	res, err := g.st.GetBucketsInfo(numbers...)
 	if err != nil {
-		b := dto.MakeResponseDTO(err, nil)
-		resp, err := json.Marshal(b)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			log.Println(err)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(resp)
+		ProcessingError(w, r, err, nil)
 		return
 	}
 	b, err := document_worker.CreateDocument(res)
@@ -58,7 +44,7 @@ func (g *getBucketInfoHandler) Hadler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (g *getBucketInfoHandler) readBodyAndGetNumbers(r *http.Request) []int64 {
+func (g *GetBucketInfoHandler) readBodyAndGetNumbers(r *http.Request) []int64 {
 	dto := &dto.InfoWithNumbersBucketDTO{}
 
 	err := json.NewDecoder(r.Body).Decode(dto)
@@ -68,5 +54,6 @@ func (g *getBucketInfoHandler) readBodyAndGetNumbers(r *http.Request) []int64 {
 	if !dto.Validate() {
 		return nil
 	}
+	dto.ProcessingDTO()
 	return dto.LinksList
 }

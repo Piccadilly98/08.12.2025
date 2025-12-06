@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"slices"
 	"time"
 
 	"github.com/signintech/gopdf"
@@ -40,7 +41,9 @@ func CreateDocument(data map[int64]map[string]string) ([]byte, error) {
 	drawTableHeader(&pdf, pageCount)
 	currentY := startY + cellH
 	pdf.SetFont("SF", "", 10)
-	for k, v := range data {
+	sort := getSortMapKey(data)
+	for _, k := range sort {
+		v := data[k]
 		if currentY >= finishY {
 			pageCount++
 			pdf.AddPage()
@@ -69,15 +72,14 @@ func CreateDocument(data map[int64]map[string]string) ([]byte, error) {
 	if currentY >= finishY {
 		pdf.AddPage()
 		pdf.SetXY(startX, startY-10)
+	} else {
+		pdf.SetXY(350, currentY)
 	}
-	pdf.SetXY(350, currentY)
 	finishStr := fmt.Sprintf("Document created in %s", time.Now().Format("2006-01-02 15:04:05"))
 	pdf.Text(finishStr)
-	pdf.WritePdf("./pdf.pdf")
-	//повторить обязательно
 	res := new(bytes.Buffer)
 	_, err = pdf.WriteTo(res)
-
+	log.Printf("create document!Page count %d\n", pageCount)
 	return res.Bytes(), err
 }
 
@@ -112,4 +114,13 @@ func drawNumberBucket(pdf *gopdf.GoPdf, currentY *float64, bucketNum int64) {
 	})
 	*currentY += cellH
 	pdf.SetFont("SF", "", 10)
+}
+
+func getSortMapKey(data map[int64]map[string]string) []int64 {
+	res := []int64{}
+	for k := range data {
+		res = append(res, k)
+	}
+	slices.Sort(res)
+	return res
 }

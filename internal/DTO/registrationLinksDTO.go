@@ -4,34 +4,28 @@ import (
 	"slices"
 )
 
-type RegistrationLinksMap struct {
-	Links     map[string]string `json:"links"`
-	Link      *string           `json:"link"`
-	NumBucket int64
-}
-
-func (r *RegistrationLinksMap) Validate() bool {
-	if r.Link != nil {
-		r.Links[*r.Link] = ""
-	}
-
-	for k := range r.Links {
-		if k == "" {
-			return false
-		}
-	}
-	return true
-}
-
 type RegistrationLinks struct {
 	Links []string `json:"links"`
 	Link  *string  `json:"link"`
 }
 
 func (r *RegistrationLinks) Validate() bool {
+	if len(r.Links) > 0 {
+		if r.Link != nil && *r.Link != "" {
+			return true
+		}
+		return !slices.Contains(r.Links, "")
+	}
+	if r.Link != nil && *r.Link != "" {
+		return true
+	}
+	return false
+}
+
+func (r *RegistrationLinks) ProcessingDTO() {
 	if r.Link != nil {
 		r.Links = append(r.Links, *r.Link)
+		r.Link = nil
 	}
-
-	return !slices.Contains(r.Links, "")
+	// return nil
 }

@@ -11,36 +11,27 @@ import (
 	"github.com/Piccadilly98/linksChecker/internal/storage"
 )
 
-type registrationHandler struct {
+type RegistrationHandler struct {
 	st *storage.Storage
 	lp *linkchecker.LinkProcessor
 }
 
-func MakeRegistrationHandler(st *storage.Storage, lp *linkchecker.LinkProcessor) *registrationHandler {
+func MakeRegistrationHandler(st *storage.Storage, lp *linkchecker.LinkProcessor) *RegistrationHandler {
 	if st == nil || lp == nil {
 		return nil
 	}
-	return &registrationHandler{
+	return &RegistrationHandler{
 		st: st,
 		lp: lp,
 	}
 }
 
-func (rh *registrationHandler) Hadler(w http.ResponseWriter, r *http.Request) {
+func (rh *RegistrationHandler) Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-
 	links := rh.readBodyAndValidation(r)
 	if links == nil {
 		errFmt := fmt.Errorf("invalid body")
-		b := dto.MakeResponseDTO(errFmt, nil)
-		resp, err := json.Marshal(b)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			log.Println(err)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(resp)
+		ProcessingError(w, r, errFmt, nil)
 		return
 	}
 	result := rh.lp.LinkChecker(links)
@@ -56,7 +47,7 @@ func (rh *registrationHandler) Hadler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (rh *registrationHandler) readBodyAndValidation(r *http.Request) []string {
+func (rh *RegistrationHandler) readBodyAndValidation(r *http.Request) []string {
 	links := &dto.RegistrationLinks{}
 
 	err := json.NewDecoder(r.Body).Decode(links)
@@ -66,5 +57,6 @@ func (rh *registrationHandler) readBodyAndValidation(r *http.Request) []string {
 	if !links.Validate() {
 		return nil
 	}
+	links.ProcessingDTO()
 	return links.Links
 }

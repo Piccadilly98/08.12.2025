@@ -1,6 +1,7 @@
 package linkchecker
 
 import (
+	"net"
 	"net/http"
 	"strings"
 	"sync"
@@ -20,9 +21,13 @@ type LinkProcessor struct {
 	mu sync.RWMutex
 }
 
+const (
+	defaultMaxGoroutine = 50
+)
+
 func MakeLinkProcessor(maxGoroutine int) *LinkProcessor {
 	if maxGoroutine <= 0 {
-		return nil
+		maxGoroutine = defaultMaxGoroutine
 	}
 	lp := &LinkProcessor{
 		ch: make(chan struct{}, maxGoroutine),
@@ -31,6 +36,13 @@ func MakeLinkProcessor(maxGoroutine int) *LinkProcessor {
 }
 
 func (lp *LinkProcessor) LinkChecker(links []string) map[string]string {
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+
 	res := make(map[string]string)
 	for _, l := range links {
 		lp.mu.RLock()
@@ -41,56 +53,56 @@ func (lp *LinkProcessor) LinkChecker(links []string) map[string]string {
 		}
 		lp.wg.Add(1)
 		lp.ch <- struct{}{}
-		go func(link string) {
+		go func(link string, cl *http.Client) {
 			defer lp.wg.Done()
 			defer func() {
 				<-lp.ch
 			}()
-			status, _ := Processinglink(l)
+			status, _, _ := Processinglink(link, cl)
 			lp.mu.Lock()
-			res[l] = status
+			res[link] = status
 			lp.mu.Unlock()
-		}(l)
+		}(l, client)
 	}
 	lp.wg.Wait()
 	return res
 }
 
-// Func Processinglink(link string) string
-// Func add befor url protocol http/https else needed and check real url-not redirect.
-// The second line in the return values ​​is a test value to check the method.
-func Processinglink(link string) (string, string) {
+func Processinglink(link string, client *http.Client) (string, string, string) {
 	needProtocol := false
 	method := ""
+	proto := ""
 	if !strings.HasPrefix(link, Http) && !strings.HasPrefix(link, Https) {
 		needProtocol = true
 	}
 	if needProtocol {
 		link = Https + link
+		proto = Https
 	}
-	client := &http.Client{
-		Timeout: 5 * time.Second,
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
-	}
+
 	resp, err := client.Head(link)
 	if err != nil {
+		if netErr, ok := err.(net.Error); ok {
+			if netErr.Timeout() {
+				return storage.StatusNotAvalible, http.MethodHead, proto
+			}
+		}
 		status := getRequest(link, client)
 		if status == storage.StatusNotAvalible && needProtocol {
 			link = Http + link
+			proto = Http
 			resp, err = client.Head(link)
 			if err != nil {
-				return getRequest(link, client), http.MethodGet
+				return getRequest(link, client), http.MethodGet, proto
 			}
-			return processingCode(resp), http.MethodHead
+			return processingCode(resp), http.MethodHead, proto
 		}
 		method = http.MethodGet
 	} else {
 		method = http.MethodHead
 	}
 	status := processingCode(resp)
-	return status, method
+	return status, method, proto
 }
 
 func getRequest(link string, client *http.Client) string {
@@ -102,8 +114,11 @@ func getRequest(link string, client *http.Client) string {
 }
 
 func processingCode(resp *http.Response) string {
-	if resp.StatusCode < 400 {
-		return storage.StatusAvalible
+	if resp == nil {
+		return storage.StatusNotAvalible
 	}
-	return storage.StatusNotAvalible
+	if resp.StatusCode >= 500 {
+		return storage.StatusNotAvalible
+	}
+	return storage.StatusAvalible
 }
