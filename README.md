@@ -15,8 +15,8 @@
 
 #### **Шаг 1: Клонирование проекта**
 ```bash
-git clone https://github.com/Piccadilly98/07.12.2025.git
-cd 07.12.2025
+git clone https://github.com/Piccadilly98/08.12.2025.git
+cd 08.12.2025
 git switch develop
 ```     
 #### **Шаг 2: Запуск сервера:**
@@ -398,7 +398,7 @@ go test -v tests/*
 **LinkChecker в коде выглядит как:**
 ```go
 type LinkProcessor struct {
-    client *http.Client // Один клиент на весь процессор, что бы по максимум переиспользовать соединения
+    client *http.Client // Один клиент на весь процессор
 	wg sync.WaitGroup   // WaitGroup для синхронизации горутин при параллельной обработке
 	ch chan struct{}    // Канал который используется для ограничения одновременных обработок
 	mu sync.RWMutex     // Mutex используется для конкурентного сбора данных со всех обработчиков
