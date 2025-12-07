@@ -20,7 +20,7 @@ const (
 type TestCaseRegistrationHandler struct {
 	Name              string
 	EndPoint          string
-	Body              dto.RegistrationLinks
+	Body              dto.RegistrationLinksRequest
 	Method            string
 	ExpectedCode      int
 	CheckResponse     bool
@@ -34,7 +34,7 @@ func TestRegistrationHandler(t *testing.T) {
 		{
 			Name:     "valid_request_1_link",
 			EndPoint: "/registration",
-			Body: dto.RegistrationLinks{
+			Body: dto.RegistrationLinksRequest{
 				Link: gePtr("vk.com"),
 			},
 			Method:            http.MethodPost,
@@ -45,7 +45,7 @@ func TestRegistrationHandler(t *testing.T) {
 		{
 			Name:     "valid_request_1_link_in_array",
 			EndPoint: "/registration",
-			Body: dto.RegistrationLinks{
+			Body: dto.RegistrationLinksRequest{
 				Links: []string{"vk.com"},
 			},
 			Method:            http.MethodPost,
@@ -56,7 +56,7 @@ func TestRegistrationHandler(t *testing.T) {
 		{
 			Name:     "valid_request_2_link_in_array",
 			EndPoint: "/registration",
-			Body: dto.RegistrationLinks{
+			Body: dto.RegistrationLinksRequest{
 				Links: []string{"vk.com", "ok.ru"},
 			},
 			Method:            http.MethodPost,
@@ -67,7 +67,7 @@ func TestRegistrationHandler(t *testing.T) {
 		{
 			Name:     "valid_request_more_identical_link_in_array",
 			EndPoint: "/registration",
-			Body: dto.RegistrationLinks{
+			Body: dto.RegistrationLinksRequest{
 				Links: []string{"vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru",
 					"vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru",
 					"vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru", "vk.com", "ok.ru"},
@@ -80,7 +80,7 @@ func TestRegistrationHandler(t *testing.T) {
 		{
 			Name:     "valid_request_more_unique_link_in_array",
 			EndPoint: "/registration",
-			Body: dto.RegistrationLinks{
+			Body: dto.RegistrationLinksRequest{
 				Links: []string{"vk.com", "ok.ru", "https://youtube.com", "gg.g", "http://wik.gg"},
 			},
 			Method:            http.MethodPost,
@@ -91,7 +91,7 @@ func TestRegistrationHandler(t *testing.T) {
 		{
 			Name:     "valid_request_more_link_in_array_and_link",
 			EndPoint: "/registration",
-			Body: dto.RegistrationLinks{
+			Body: dto.RegistrationLinksRequest{
 				Links: []string{"vk.com", "ok.ru", "https://youtube.com", "gg.g", "http://wik.gg"},
 				Link:  gePtr("s.com"),
 			},
@@ -103,12 +103,12 @@ func TestRegistrationHandler(t *testing.T) {
 		{
 			Name:     "valid_request_100_unique_links",
 			EndPoint: "/registration",
-			Body: func() dto.RegistrationLinks {
+			Body: func() dto.RegistrationLinksRequest {
 				links := make([]string, 100)
 				for i := 0; i < 100; i++ {
 					links[i] = fmt.Sprintf("example%d.com", i)
 				}
-				return dto.RegistrationLinks{Links: links}
+				return dto.RegistrationLinksRequest{Links: links}
 			}(),
 			Method:            http.MethodPost,
 			ExpectedCode:      http.StatusCreated,
@@ -121,7 +121,7 @@ func TestRegistrationHandler(t *testing.T) {
 		{
 			Name:          "invalid_method_get",
 			EndPoint:      "/registration",
-			Body:          dto.RegistrationLinks{},
+			Body:          dto.RegistrationLinksRequest{},
 			Method:        http.MethodGet,
 			ExpectedCode:  http.StatusMethodNotAllowed,
 			CheckResponse: false,
@@ -129,7 +129,7 @@ func TestRegistrationHandler(t *testing.T) {
 		{
 			Name:          "invalid_method_head",
 			EndPoint:      "/registration",
-			Body:          dto.RegistrationLinks{},
+			Body:          dto.RegistrationLinksRequest{},
 			Method:        http.MethodHead,
 			ExpectedCode:  http.StatusMethodNotAllowed,
 			CheckResponse: false,
@@ -137,7 +137,7 @@ func TestRegistrationHandler(t *testing.T) {
 		{
 			Name:          "invalid_method_delete",
 			EndPoint:      "/registration",
-			Body:          dto.RegistrationLinks{},
+			Body:          dto.RegistrationLinksRequest{},
 			Method:        http.MethodDelete,
 			ExpectedCode:  http.StatusMethodNotAllowed,
 			CheckResponse: false,
@@ -145,7 +145,7 @@ func TestRegistrationHandler(t *testing.T) {
 		{
 			Name:          "invalid_method_patch",
 			EndPoint:      "/registration",
-			Body:          dto.RegistrationLinks{},
+			Body:          dto.RegistrationLinksRequest{},
 			Method:        http.MethodPatch,
 			ExpectedCode:  http.StatusMethodNotAllowed,
 			CheckResponse: false,
@@ -153,7 +153,7 @@ func TestRegistrationHandler(t *testing.T) {
 		{
 			Name:          "invalid_method_options",
 			EndPoint:      "/registration",
-			Body:          dto.RegistrationLinks{},
+			Body:          dto.RegistrationLinksRequest{},
 			Method:        http.MethodOptions,
 			ExpectedCode:  http.StatusMethodNotAllowed,
 			CheckResponse: false,
@@ -171,7 +171,7 @@ func TestRegistrationHandler(t *testing.T) {
 		{
 			Name:          "invalid_empty_array",
 			EndPoint:      "/registration",
-			Body:          dto.RegistrationLinks{},
+			Body:          dto.RegistrationLinksRequest{},
 			Method:        http.MethodPost,
 			ExpectedCode:  http.StatusBadRequest,
 			CheckResponse: false,
@@ -192,7 +192,7 @@ func TestRegistrationHandler(t *testing.T) {
 				t.Errorf("CODE: got: %d, expect: %d\n", w.Code, tc.ExpectedCode)
 			}
 			if tc.CheckResponse {
-				response := dto.GetInfoBucketDTO{}
+				response := dto.GetBucketInfoResponse{}
 				if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
 					t.Fatalf("Failed to parse JSON: %v\nResponse: %s", err, w.Body.String())
 				}

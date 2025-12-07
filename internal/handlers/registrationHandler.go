@@ -35,8 +35,8 @@ func (rh *RegistrationHandler) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	result := rh.lp.LinkChecker(links)
-	id := rh.st.RegistrationLinks(result)
-	resp := dto.CreateGetInfoBucketDTO(rh.st.GetLiinksInfo(id), id)
+	id := rh.st.RegistrationLinksRequest(result)
+	resp := dto.CreateGetInfoBucketDTO(rh.st.GetLinksInfo(id), id)
 	b, err := json.Marshal(resp)
 	if err != nil {
 		log.Println(err.Error())
@@ -48,7 +48,7 @@ func (rh *RegistrationHandler) Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rh *RegistrationHandler) readBodyAndValidation(r *http.Request) []string {
-	links := &dto.RegistrationLinks{}
+	links := &dto.RegistrationLinksRequest{}
 
 	err := json.NewDecoder(r.Body).Decode(links)
 	if err != nil {

@@ -4,12 +4,12 @@ import (
 	"slices"
 )
 
-type RegistrationLinks struct {
+type RegistrationLinksRequest struct {
 	Links []string `json:"links"`
 	Link  *string  `json:"link"`
 }
 
-func (r *RegistrationLinks) Validate() bool {
+func (r *RegistrationLinksRequest) Validate() bool {
 	if len(r.Links) > 0 {
 		if r.Link != nil && *r.Link != "" {
 			return true
@@ -22,7 +22,7 @@ func (r *RegistrationLinks) Validate() bool {
 	return false
 }
 
-func (r *RegistrationLinks) ProcessingDTO() {
+func (r *RegistrationLinksRequest) ProcessingDTO() {
 	if r.Link != nil {
 		r.Links = append(r.Links, *r.Link)
 		r.Link = nil

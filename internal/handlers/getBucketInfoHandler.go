@@ -45,7 +45,7 @@ func (g *GetBucketInfoHandler) Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (g *GetBucketInfoHandler) readBodyAndGetNumbers(r *http.Request) []int64 {
-	dto := &dto.InfoWithNumbersBucketDTO{}
+	dto := &dto.GetBucketsRequest{}
 
 	err := json.NewDecoder(r.Body).Decode(dto)
 	if err != nil {

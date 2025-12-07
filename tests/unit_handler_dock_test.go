@@ -13,7 +13,7 @@ import (
 
 type TestCaseDockHandler struct {
 	Name           string
-	Body           dto.InfoWithNumbersBucketDTO
+	Body           dto.GetBucketsRequest
 	Method         string
 	ExpectedFormat string
 	ExpectedCode   int
@@ -35,7 +35,7 @@ func TestDockHandler(t *testing.T) {
 		//VALID
 		{
 			Name: "valid_1_number_in_link",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinkList: getPtrInt(1),
 			},
 			Method:         http.MethodGet,
@@ -44,7 +44,7 @@ func TestDockHandler(t *testing.T) {
 		},
 		{
 			Name: "valid_1_number_in_links",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinksList: []int64{1},
 			},
 			Method:         http.MethodGet,
@@ -53,7 +53,7 @@ func TestDockHandler(t *testing.T) {
 		},
 		{
 			Name: "valid_2_numbers_in_links",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinksList: []int64{1, 2},
 			},
 			Method:         http.MethodGet,
@@ -62,7 +62,7 @@ func TestDockHandler(t *testing.T) {
 		},
 		{
 			Name: "valid_2_numbers_in_links_1_in_link",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinksList: []int64{1, 2},
 				LinkList:  getPtrInt(3),
 			},
@@ -72,7 +72,7 @@ func TestDockHandler(t *testing.T) {
 		},
 		{
 			Name: "valid_3_numbers_in_links_1_in_link",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinksList: []int64{1, 2, 3},
 				LinkList:  getPtrInt(4),
 			},
@@ -82,7 +82,7 @@ func TestDockHandler(t *testing.T) {
 		},
 		{
 			Name: "valid_4_numbers_in_links",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinksList: []int64{1, 2, 3, 4},
 			},
 			Method:         http.MethodGet,
@@ -91,7 +91,7 @@ func TestDockHandler(t *testing.T) {
 		},
 		{
 			Name: "valid_4_repeat_numbers_in_links",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinksList: []int64{1, 1, 1, 1},
 			},
 			Method:         http.MethodGet,
@@ -100,7 +100,7 @@ func TestDockHandler(t *testing.T) {
 		},
 		{
 			Name: "valid_2_repeat_numbers_in_links_and_1_in_link",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinksList: []int64{1, 1},
 				LinkList:  getPtrInt(1),
 			},
@@ -141,7 +141,7 @@ func TestDockHandler(t *testing.T) {
 
 		{
 			Name: "invalid_1_number_in_link",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinkList: getPtrInt(5),
 			},
 			Method:         http.MethodGet,
@@ -150,7 +150,7 @@ func TestDockHandler(t *testing.T) {
 		},
 		{
 			Name: "invalid_1_number_in_link_<0",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinkList: getPtrInt(-1),
 			},
 			Method:         http.MethodGet,
@@ -159,7 +159,7 @@ func TestDockHandler(t *testing.T) {
 		},
 		{
 			Name: "invalid_1_number_in_links",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinksList: []int64{5},
 			},
 			Method:         http.MethodGet,
@@ -168,7 +168,7 @@ func TestDockHandler(t *testing.T) {
 		},
 		{
 			Name: "invalid_1_number_in_links_<0",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinksList: []int64{-1},
 			},
 			Method:         http.MethodGet,
@@ -177,7 +177,7 @@ func TestDockHandler(t *testing.T) {
 		},
 		{
 			Name: "invalid_2_number_in_links",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinksList: []int64{5, 6},
 			},
 			Method:         http.MethodGet,
@@ -186,7 +186,7 @@ func TestDockHandler(t *testing.T) {
 		},
 		{
 			Name: "invalid_1_number_in_links_and_1_valid",
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinksList: []int64{5, 1},
 			},
 			Method:         http.MethodGet,
@@ -195,7 +195,7 @@ func TestDockHandler(t *testing.T) {
 		},
 		{
 			Name:           "invalid_empty_body",
-			Body:           dto.InfoWithNumbersBucketDTO{},
+			Body:           dto.GetBucketsRequest{},
 			Method:         http.MethodGet,
 			ExpectedFormat: HeaderFormatJSON,
 			ExpectedCode:   http.StatusBadRequest,

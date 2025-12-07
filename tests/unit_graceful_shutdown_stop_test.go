@@ -51,7 +51,7 @@ func TestGracefulStop(t *testing.T) {
 			Method:            http.MethodPost,
 			StopBeforeRequest: true,
 			ExpectedCode:      http.StatusServiceUnavailable,
-			Body: dto.RegistrationLinks{
+			Body: dto.RegistrationLinksRequest{
 				Link: gePtr("http://youtube.com"),
 			},
 		},
@@ -68,7 +68,7 @@ func TestGracefulStop(t *testing.T) {
 			Method:            http.MethodGet,
 			StopBeforeRequest: true,
 			ExpectedCode:      http.StatusServiceUnavailable,
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinksList: []int64{1, 2},
 			},
 		},
@@ -78,7 +78,7 @@ func TestGracefulStop(t *testing.T) {
 			Method:            http.MethodPost,
 			StopBeforeRequest: true,
 			ExpectedCode:      http.StatusServiceUnavailable,
-			Body: dto.RegistrationLinks{
+			Body: dto.RegistrationLinksRequest{
 				Link: gePtr("1111111111111111111111111111111111111"),
 			},
 		},
@@ -105,7 +105,7 @@ func TestGracefulStop(t *testing.T) {
 			Method:            http.MethodPost,
 			StopInRequestTime: true,
 			ExpectedCode:      http.StatusCreated,
-			Body: dto.RegistrationLinks{
+			Body: dto.RegistrationLinksRequest{
 				Link: gePtr("http://youtube.com"),
 			},
 		},
@@ -122,7 +122,7 @@ func TestGracefulStop(t *testing.T) {
 			Method:            http.MethodGet,
 			StopInRequestTime: true,
 			ExpectedCode:      http.StatusOK,
-			Body: dto.InfoWithNumbersBucketDTO{
+			Body: dto.GetBucketsRequest{
 				LinksList: []int64{1, 2},
 			},
 		},
@@ -132,7 +132,7 @@ func TestGracefulStop(t *testing.T) {
 			Method:            http.MethodPost,
 			StopInRequestTime: true,
 			ExpectedCode:      http.StatusCreated,
-			Body: dto.RegistrationLinks{
+			Body: dto.RegistrationLinksRequest{
 				Link: gePtr("1111111111111111111111111111111111111"),
 			},
 		},

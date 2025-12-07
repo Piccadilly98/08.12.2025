@@ -32,7 +32,7 @@ func InitStorage(server *server.Server) error {
 	method := http.MethodPost
 	url := "http://localhost:8080/registration"
 
-	regCase := []dto.RegistrationLinks{
+	regCase := []dto.RegistrationLinksRequest{
 		{
 			Links: []string{"vk.com", "yandex.ru", "ya.ru", "mail.ru", "google.com"},
 			Link:  gePtr("github.com"),

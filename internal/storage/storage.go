@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	StatusAvalible    = "available"
-	StatusNotAvalible = "not available"
+	StatusAvailable    = "available"
+	StatusNotAvailable = "not available"
 )
 
 type Storage struct {
@@ -24,7 +24,7 @@ func MakeStorage() *Storage {
 	return s
 }
 
-func (s *Storage) RegistrationLinks(links map[string]string) int64 {
+func (s *Storage) RegistrationLinksRequest(links map[string]string) int64 {
 	if links == nil {
 		return -1
 	}
@@ -35,7 +35,7 @@ func (s *Storage) RegistrationLinks(links map[string]string) int64 {
 	return s.counter.Load()
 }
 
-func (s *Storage) GetLiinksInfo(id int64) map[string]string {
+func (s *Storage) GetLinksInfo(id int64) map[string]string {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	links, ok := s.links[id]
@@ -49,7 +49,7 @@ func (s *Storage) GetBucketsInfo(IDs ...int64) (map[int64]map[string]string, err
 	res := make(map[int64]map[string]string)
 
 	for _, id := range IDs {
-		info := s.GetLiinksInfo(id)
+		info := s.GetLinksInfo(id)
 		if info == nil {
 			return nil, fmt.Errorf("invalid id - %d", id)
 		}
