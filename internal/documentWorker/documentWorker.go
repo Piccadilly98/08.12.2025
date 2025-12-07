@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"slices"
 	"time"
 
@@ -18,14 +20,41 @@ const (
 	finishY = 782
 )
 
+func getProjectRoot() (string, error) {
+	pwd, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("cannot get current file path")
+	}
+
+	dir := filepath.Dir(pwd)
+	for {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		}
+
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return "", fmt.Errorf("go.mod not found")
+		}
+		dir = parent
+	}
+}
+
 func CreateDocument(data map[int64]map[string]string) ([]byte, error) {
+	projectRoot, err := getProjectRoot()
+	if err != nil {
+		return nil, fmt.Errorf("cannot find project root: %w", err)
+	}
+
+	fontPathSF := filepath.Join(projectRoot, "materials", "fonts", "SFNS.ttf")
+	fontPathNY := filepath.Join(projectRoot, "materials", "fonts", "NewYork.ttf")
 	font := ""
 	pdf := gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
-	err := pdf.AddTTFFont("SF", "../../materials/fonts/SFNS.ttf")
+	err = pdf.AddTTFFont("SF", fontPathSF)
 	if err != nil {
 		log.Print(err.Error())
-		err := pdf.AddTTFFont("NY", "../../materials/fonts/NewYork.ttf")
+		err := pdf.AddTTFFont("NY", fontPathNY)
 		if err != nil {
 			return nil, err
 		}
