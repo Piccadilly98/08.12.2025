@@ -54,7 +54,7 @@ func (w *WorkerOSSignal) Start() {
 					w.exitChan <- struct{}{}
 					return
 				}
-				log.Println("request not finish!")
+				log.Printf("Lost requests: %d\n", w.countRequest.Load())
 				w.exitChan <- struct{}{}
 				return
 			}
@@ -72,4 +72,9 @@ func (w *WorkerOSSignal) DoneRequest() {
 
 func (w *WorkerOSSignal) IsOff() bool {
 	return w.isOff.Load()
+}
+
+func (w *WorkerOSSignal) PauseUnpauseServerTesting() bool {
+	w.isStoped.Store(!w.IsStoped())
+	return w.IsStoped()
 }

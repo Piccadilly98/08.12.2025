@@ -3,7 +3,6 @@ package dto
 type InfoWithNumbersBucketDTO struct {
 	LinksList []int64 `json:"links_list"`
 	LinkList  *int64  `json:"link_list"`
-	// Valid     bool    `json:"-"`
 }
 
 func (n *InfoWithNumbersBucketDTO) Validate() bool {

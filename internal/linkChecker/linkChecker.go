@@ -22,7 +22,7 @@ type LinkProcessor struct {
 }
 
 const (
-	defaultMaxGoroutine = 50
+	defaultMaxGoroutine = 10
 )
 
 func MakeLinkProcessor(maxGoroutine int) *LinkProcessor {
@@ -79,7 +79,6 @@ func Processinglink(link string, client *http.Client) (string, string, string) {
 		link = Https + link
 		proto = Https
 	}
-
 	resp, err := client.Head(link)
 	if err != nil {
 		if netErr, ok := err.(net.Error); ok {

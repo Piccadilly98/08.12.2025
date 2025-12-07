@@ -31,7 +31,7 @@ func (rh *RegistrationHandler) Handler(w http.ResponseWriter, r *http.Request) {
 	links := rh.readBodyAndValidation(r)
 	if links == nil {
 		errFmt := fmt.Errorf("invalid body")
-		ProcessingError(w, r, errFmt, nil)
+		ProcessingError(w, r, errFmt, nil, http.StatusBadRequest)
 		return
 	}
 	result := rh.lp.LinkChecker(links)

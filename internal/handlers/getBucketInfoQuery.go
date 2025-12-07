@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	document_worker "github.com/Piccadilly98/linksChecker/internal/documentWorker"
+	document_worker "github.com/Piccadilly98/linksChecker/internal/document_worker"
 	"github.com/Piccadilly98/linksChecker/internal/storage"
 )
 
@@ -32,12 +32,12 @@ func (g *GetBucketsInfoQueryHandler) Handler(w http.ResponseWriter, r *http.Requ
 		if strings.Contains(err.Error(), AtoiErr) {
 			err = fmt.Errorf("invalid bucket id")
 		}
-		ProcessingError(w, r, err, nil)
+		ProcessingError(w, r, err, nil, http.StatusBadRequest)
 		return
 	}
 	res, err := g.st.GetBucketsInfo(ids...)
 	if err != nil {
-		ProcessingError(w, r, err, nil)
+		ProcessingError(w, r, err, nil, http.StatusBadRequest)
 		return
 	}
 	b, err := document_worker.CreateDocument(res)

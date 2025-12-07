@@ -19,7 +19,7 @@ func GetJsonError(err error) ([]byte, error) {
 	return b, nil
 }
 
-func ProcessingError(w http.ResponseWriter, r *http.Request, err error, data *string) {
+func ProcessingError(w http.ResponseWriter, r *http.Request, err error, data *string, finishCode int) {
 	dto := dto.MakeResponseDTO(err, data)
 	b, err := json.Marshal(dto)
 	if err != nil {
@@ -27,6 +27,6 @@ func ProcessingError(w http.ResponseWriter, r *http.Request, err error, data *st
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusBadRequest)
+	w.WriteHeader(finishCode)
 	w.Write(b)
 }

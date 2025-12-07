@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	dto "github.com/Piccadilly98/linksChecker/internal/DTO"
-	document_worker "github.com/Piccadilly98/linksChecker/internal/documentWorker"
+	document_worker "github.com/Piccadilly98/linksChecker/internal/document_worker"
 	"github.com/Piccadilly98/linksChecker/internal/storage"
 )
 
@@ -26,12 +26,12 @@ func (g *GetBucketInfoHandler) Handler(w http.ResponseWriter, r *http.Request) {
 	numbers := g.readBodyAndGetNumbers(r)
 	if numbers == nil {
 		errFmt := fmt.Errorf("invalid body")
-		ProcessingError(w, r, errFmt, nil)
+		ProcessingError(w, r, errFmt, nil, http.StatusBadRequest)
 		return
 	}
 	res, err := g.st.GetBucketsInfo(numbers...)
 	if err != nil {
-		ProcessingError(w, r, err, nil)
+		ProcessingError(w, r, err, nil, http.StatusBadRequest)
 		return
 	}
 	b, err := document_worker.CreateDocument(res)

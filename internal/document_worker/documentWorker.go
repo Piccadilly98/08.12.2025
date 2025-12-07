@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"time"
 
@@ -21,14 +22,14 @@ const (
 )
 
 func getProjectRoot() (string, error) {
-	pwd, err := os.Getwd()
-	if err != nil {
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
 		return "", fmt.Errorf("cannot get current file path")
 	}
-
-	dir := filepath.Dir(pwd)
+	dir := filepath.Dir(filename)
 	for {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+		goModPath := filepath.Join(dir, "go.mod")
+		if _, err := os.Stat(goModPath); err == nil {
 			return dir, nil
 		}
 
@@ -43,9 +44,9 @@ func getProjectRoot() (string, error) {
 func CreateDocument(data map[int64]map[string]string) ([]byte, error) {
 	projectRoot, err := getProjectRoot()
 	if err != nil {
+		log.Println(err)
 		return nil, fmt.Errorf("cannot find project root: %w", err)
 	}
-
 	fontPathSF := filepath.Join(projectRoot, "materials", "fonts", "SFNS.ttf")
 	fontPathNY := filepath.Join(projectRoot, "materials", "fonts", "NewYork.ttf")
 	font := ""
@@ -117,7 +118,6 @@ func CreateDocument(data map[int64]map[string]string) ([]byte, error) {
 	pdf.Text(finishStr)
 	res := new(bytes.Buffer)
 	_, err = pdf.WriteTo(res)
-	log.Printf("create document!Page count %d\n", pageCount)
 	return res.Bytes(), err
 }
 

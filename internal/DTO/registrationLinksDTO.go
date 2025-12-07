@@ -27,5 +27,4 @@ func (r *RegistrationLinks) ProcessingDTO() {
 		r.Links = append(r.Links, *r.Link)
 		r.Link = nil
 	}
-	// return nil
 }
