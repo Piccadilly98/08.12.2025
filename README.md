@@ -15,7 +15,7 @@
 
 #### **Шаг 1: Клонирование проекта**
 ```bash
-git clone https://github.com/Piccadilly98/08.12.2025.git
+git clone https://github.com/Piccadilly98/link-checker.git
 cd 08.12.2025
 git switch develop
 ```     
